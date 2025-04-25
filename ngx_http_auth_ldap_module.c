@@ -614,6 +614,10 @@ ngx_http_auth_ldap_parse_url(ngx_conf_t *cf, ngx_http_auth_ldap_server_t *server
         server->ludpp->lud_port);
     server->url.len = p - server->url.data - 1;
 
+    ngx_conf_log_error(NGX_LOG_NOTICE, cf, 0, "http_auth_ldap: ludpp->lud_scheme=%s", server->ludpp->lud_scheme);
+    ngx_conf_log_error(NGX_LOG_NOTICE, cf, 0, "http_auth_ldap: ludpp->lud_host=%s", server->ludpp->lud_host);
+    ngx_conf_log_error(NGX_LOG_NOTICE, cf, 0, "http_auth_ldap: ludpp->lud_port=%s", server->ludpp->lud_port);
+    ngx_conf_log_error(NGX_LOG_NOTICE, cf, 0, "http_auth_ldap: ludpp->lud_dn=%s", server->ludpp->lud_dn);
     ngx_memzero(&server->parsed_url, sizeof(ngx_url_t));
     server->parsed_url.url.data = (u_char *) server->ludpp->lud_host;
     server->parsed_url.url.len = ngx_strlen(server->ludpp->lud_host);
