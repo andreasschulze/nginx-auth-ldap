@@ -624,7 +624,8 @@ ngx_http_auth_ldap_parse_url(ngx_conf_t *cf, ngx_http_auth_ldap_server_t *server
     server->parsed_url.default_port = server->ludpp->lud_port;
     ngx_conf_log_error(NGX_LOG_NOTICE, cf, 0, "http_auth_ldap: parsed_url.url.data=%s", server->parsed_url.url.data);
     ngx_conf_log_error(NGX_LOG_NOTICE, cf, 0, "http_auth_ldap: parsed_url.default_port=%s", server->parsed_url.default_port);
-    if (ngx_strcmp(server->ludpp->lud_scheme, "ldap") == 0) {
+    if (ngx_strcmp(server->ludpp->lud_scheme, "ldapi") == 0) {
+        ngx_conf_log_error(NGX_LOG_NOTICE, cf, 0, "http_auth_ldap: ldapi erkannt");
         return NGX_CONF_OK;
     }
     if (ngx_parse_url(cf->pool, &server->parsed_url) != NGX_OK) {
