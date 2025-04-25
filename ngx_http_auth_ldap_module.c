@@ -610,8 +610,13 @@ ngx_http_auth_ldap_parse_url(ngx_conf_t *cf, ngx_http_auth_ldap_server_t *server
 
     server->url.data = ngx_palloc(cf->pool, ngx_strlen(server->ludpp->lud_scheme) + sizeof("://") - 1 +
         ngx_strlen(server->ludpp->lud_host) + sizeof(":65535"));
-    p = ngx_sprintf(server->url.data, "%s://%s:%d%Z", server->ludpp->lud_scheme, server->ludpp->lud_host,
-        server->ludpp->lud_port);
+    if (ngx_strcmp(server->ludpp->lud_scheme, "ldapi") == 0) {
+        ngx_conf_log_error(NGX_LOG_NOTICE, cf, 0, "http_auth_ldap: ldapi erkannt");
+        p = ngx_sprintf(server->url.data, "unix:/%s%Z", server->ludpp->lud_host);
+    } else {
+        p = ngx_sprintf(server->url.data, "%s://%s:%d%Z", server->ludpp->lud_scheme, server->ludpp->lud_host,
+            server->ludpp->lud_port);
+    }
     server->url.len = p - server->url.data - 1;
 
     ngx_conf_log_error(NGX_LOG_NOTICE, cf, 0, "http_auth_ldap: ludpp->lud_scheme=%s", server->ludpp->lud_scheme);
@@ -624,10 +629,6 @@ ngx_http_auth_ldap_parse_url(ngx_conf_t *cf, ngx_http_auth_ldap_server_t *server
     server->parsed_url.default_port = server->ludpp->lud_port;
     ngx_conf_log_error(NGX_LOG_NOTICE, cf, 0, "http_auth_ldap: parsed_url.url.data=%s", server->parsed_url.url.data);
     ngx_conf_log_error(NGX_LOG_NOTICE, cf, 0, "http_auth_ldap: parsed_url.default_port=%i", server->parsed_url.default_port);
-    if (ngx_strcmp(server->ludpp->lud_scheme, "ldapi") == 0) {
-        ngx_conf_log_error(NGX_LOG_NOTICE, cf, 0, "http_auth_ldap: ldapi erkannt");
-        return NGX_CONF_OK;
-    }
     if (ngx_parse_url(cf->pool, &server->parsed_url) != NGX_OK) {
         if (server->parsed_url.err) {
             ngx_conf_log_error(NGX_LOG_EMERG, cf, 0, "http_auth_ldap: %s in LDAP hostname \"%V\"",
@@ -1661,6 +1662,7 @@ ngx_http_auth_ldap_connect(ngx_http_auth_ldap_connection_t *c)
     ngx_addr_t *addr;
     ngx_int_t rc;
 
+    ngx_conf_log_error(NGX_LOG_NOTICE, cf, 0, "http_auth_ldap: ngx_http_auth_ldap_connect");
     addr = &c->server->parsed_url.addrs[ngx_random() % c->server->parsed_url.naddrs];
 
     ngx_log_debug1(NGX_LOG_DEBUG_HTTP, c->log, 0, "http_auth_ldap: Connecting to LDAP server \"%V\".",
