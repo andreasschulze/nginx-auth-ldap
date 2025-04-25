@@ -1662,7 +1662,7 @@ ngx_http_auth_ldap_connect(ngx_http_auth_ldap_connection_t *c)
     ngx_addr_t *addr;
     ngx_int_t rc;
 
-    ngx_conf_log_error(NGX_LOG_NOTICE, cf, 0, "http_auth_ldap: ngx_http_auth_ldap_connect");
+    ngx_log_error(NGX_LOG_NOTICE, c->log, 0, "http_auth_ldap:ngx_http_auth_ldap_connect");
     addr = &c->server->parsed_url.addrs[ngx_random() % c->server->parsed_url.naddrs];
 
     ngx_log_debug1(NGX_LOG_DEBUG_HTTP, c->log, 0, "http_auth_ldap: Connecting to LDAP server \"%V\".",
